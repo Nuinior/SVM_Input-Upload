@@ -31,16 +31,41 @@ if option == "📝 กรอกข้อความ":
 # 📌 อัปโหลดไฟล์ Excel
 elif option == "📂 อัปโหลดไฟล์ Excel":
     uploaded_file = st.file_uploader("อัปโหลดไฟล์ Excel (.xlsx)", type=["xlsx"])
-    if uploaded_file:
-        df = pd.read_excel(uploaded_file)
+    # if uploaded_file:
+    #     df = pd.read_excel(uploaded_file)
         
+    #     if 'Text' in df.columns:
+    #         df['Sentiment'] = df['Text'].apply(predict_sentiment)
+    #         st.write(df[['Text', 'Sentiment']])
+            
+    #         # ดาวน์โหลดผลลัพธ์
+    #         output_filename = "sentiment_results.xlsx"
+    #         df.to_excel(output_filename, index=False)
+    #         st.download_button(
+    #             label="📥 ดาวน์โหลดผลลัพธ์",
+    #             data=open(output_filename, "rb"),
+
+        if uploaded_file:
+            df = pd.read_excel(uploaded_file)
+
         if 'Text' in df.columns:
             df['Sentiment'] = df['Text'].apply(predict_sentiment)
             st.write(df[['Text', 'Sentiment']])
-            
-            # ดาวน์โหลดผลลัพธ์
+
+            # บันทึก DataFrame เป็นไฟล์ Excel
             output_filename = "sentiment_results.xlsx"
             df.to_excel(output_filename, index=False)
+
+            # โหลดไฟล์และแปลงเป็น binary เพื่อให้ Streamlit โหลดได้
+            with open(output_filename, "rb") as file:
+                file_data = file.read()
+
+            # ปุ่มดาวน์โหลด
             st.download_button(
                 label="📥 ดาวน์โหลดผลลัพธ์",
-                data=open(output_filename, "rb"),
+                data=file_data,
+                file_name="sentiment_results.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+        else:
+            st.error("⚠️ ไฟล์ต้องมีคอลัมน์ชื่อ 'Text' เท่านั้น!")
